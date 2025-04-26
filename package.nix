@@ -36,6 +36,9 @@ let
     url = "https://docs.binary.ninja/img/logo.png";
     hash = "sha256-TzGAAefTknnOBj70IHe64D6VwRKqIDpL4+o9kTw0Mn4=";
   };
+  patched_qtdeclarative = kdePackages.qtdeclarative.overrideAttrs (finalAttrs: previousAttrs: {
+    propagatedBuildInputs = previousAttrs.propagatedBuildInputs ++ [kdePackages.qtsvg];
+  });
 in
 stdenv.mkDerivation {
   pname = "binary-ninja";
@@ -58,7 +61,7 @@ stdenv.mkDerivation {
     xorg.xcbutilimage
     xorg.xcbutilrenderutil
     kdePackages.qtbase
-    kdePackages.qtdeclarative
+    patched_qtdeclarative
     kdePackages.qtwayland
     libxkbcommon
     dbus
@@ -91,7 +94,7 @@ stdenv.mkDerivation {
     mkdir -p $out/opt/binaryninja
     mkdir -p $out/share/pixmaps
     cp -r * $out/opt/binaryninja
-    rm $out/opt/binaryninja/*.so.*
+    rm $out/opt/binaryninja/*libQt6*.so.*
     cp ${desktopIcon} $out/share/pixmaps/binaryninja.png
     chmod +x $out/opt/binaryninja/binaryninja
     buildPythonPath "$pythonDeps"
